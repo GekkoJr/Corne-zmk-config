@@ -3,5 +3,5 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: git.gekkojr.me/gekko/zmk-firmware/.github/workflows/build-user-config.yml
+    uses: git.gekkojr.me/gekko/zmk-firmware/.github/workflows/build-user-config.yml@v0.3
 
