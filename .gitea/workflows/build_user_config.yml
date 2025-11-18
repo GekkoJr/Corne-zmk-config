@@ -41,13 +41,12 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container:
-      image: zmkfirmware/zmk-build-arm:stable
     needs: matrix
     name: Build
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -66,7 +65,7 @@ jobs:
         env:
           board: ${{ matrix.board }}
           shield: ${{ matrix.shield }}
-          artifact_name: ${{ matrix.artifact-name }}
+          artifact_name: ${{ matrix['artifact-name'] }}
           snippet: ${{ matrix.snippet }}
         run: |
           if [ -e zephyr/module.yml ]; then
@@ -113,22 +112,64 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      ##############################################
+      # WEST INIT
+      ##############################################
       - name: West Init
-        working-directory: ${{ env.base_dir }}
-        run: west init -l "${{ env.base_dir }}/${{ inputs.config_path }}"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: zmkfirmware/zmk-build-arm:stable
+          options: |
+            -v ${{ env.base_dir }}:${{ env.base_dir }}
+          run: |
+            cd "${{ env.base_dir }}"
+            west init -l "${{ env.base_dir }}/${{ inputs.config_path }}"
 
+      ##############################################
+      # WEST UPDATE
+      ##############################################
       - name: West Update
-        working-directory: ${{ env.base_dir }}
-        run: west update --fetch-opt=--filter=tree:0
+        uses: addnab/docker-run-action@v3
+        with:
+          image: zmkfirmware/zmk-build-arm:stable
+          options: |
+            -v ${{ env.base_dir }}:${{ env.base_dir }}
+          run: |
+            cd "${{ env.base_dir }}"
+            west update --fetch-opt=--filter=tree:0
 
+      ##############################################
+      # WEST EXPORT
+      ##############################################
       - name: West Zephyr export
-        working-directory: ${{ env.base_dir }}
-        run: west zephyr-export
+        uses: addnab/docker-run-action@v3
+        with:
+          image: zmkfirmware/zmk-build-arm:stable
+          options: |
+            -v ${{ env.base_dir }}:${{ env.base_dir }}
+          run: |
+            cd "${{ env.base_dir }}"
+            west zephyr-export
 
+      ##############################################
+      # WEST BUILD
+      ##############################################
       - name: West Build (${{ env.display_name }})
-        working-directory: ${{ env.base_dir }}
-        shell: sh -x {0}
-        run: west build -s zmk/app -d "${{ env.build_dir }}" -b "${{ matrix.board }}" ${{ env.extra_west_args }} -- -DZMK_CONFIG=${{ env.base_dir }}/${{ inputs.config_path }} ${{ env.extra_cmake_args }} ${{ matrix.cmake-args }}
+        uses: addnab/docker-run-action@v3
+        with:
+          image: zmkfirmware/zmk-build-arm:stable
+          options: |
+            -v ${{ env.base_dir }}:${{ env.base_dir }}
+            -v ${{ env.build_dir }}:${{ env.build_dir }}
+          run: |
+            cd "${{ env.base_dir }}"
+            west build -s zmk/app \
+              -d "${{ env.build_dir }}" \
+              -b "${{ matrix.board }}" \
+              ${{ env.extra_west_args }} -- \
+              -DZMK_CONFIG=${{ env.base_dir }}/${{ inputs.config_path }} \
+              ${{ env.extra_cmake_args }} \
+              ${{ matrix['cmake-args'] }}
 
       - name: ${{ env.display_name }} Kconfig file
         run: |
