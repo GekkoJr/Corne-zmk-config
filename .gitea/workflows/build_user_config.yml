@@ -52,7 +52,7 @@ jobs:
           west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=corne_right
 
       - name: Upload Firmware Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: firmware
           path: |
