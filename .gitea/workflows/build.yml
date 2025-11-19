@@ -1,35 +1,40 @@
-name: ZMK Build
+name: Reusable user config build
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
+    inputs:
+      build_matrix_path:
+        description: "Path to the build matrix file"
+        default: "build.yaml"
+        required: false
+        type: string
+      config_path:
+        description: "Path to the config directory"
+        default: "config"
+        required: false
+        type: string
+      fallback_binary:
+        description: "Fallback binary format, if no *.uf2 file was built"
+        default: "bin"
+        required: false
+        type: string
+      archive_name:
+        description: "Archive output file name"
+        default: "firmware"
+        required: false
+        type: string
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: zmkfirmware/zmk-build-arm:stable
-
+  matrix:
+    runs-on: ubuntu-22.04
+    name: Fetch Build Keyboards
+    outputs:
+      build_matrix: ${{ env.build_matrix }}
     steps:
-      - name: Checkout config repo
-        run: |
-          git clone https://git.gekkojr.me/gekko/zmk-config .
-          git fetch --prune --unshallow || true
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Initialize west (pointing to this repo as config)
+      - name: Fetch Build Matrix
         run: |
-          west init -l .
-          west update
-          west zephyr-export
-
-      - name: Build firmware
-        run: |
-          west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=my_keyboard
-          cp build/zephyr/zmk.uf2 firmware.uf2
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: zmk-firmware
-          path: firmware.uf2
+          echo "build_matrix=$(yq -oj -I0 '${{ inputs.build_matrix_path }}')" >> $GITEA_ENV
+          yq -oj "${{ inputs.build_matrix_path }}"
