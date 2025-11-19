@@ -3,6 +3,7 @@ name: ZMK Firmware Build
 on:
   push:
     branches:
+      - master
       - main
   pull_request:
 
