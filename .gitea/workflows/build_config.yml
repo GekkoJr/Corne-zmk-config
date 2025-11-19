@@ -1,6 +1,6 @@
 name: Reusable user config build
 
-on:
+on: [push, pull_request]
   workflow_call:
     inputs:
       build_matrix_path:
@@ -38,6 +38,7 @@ jobs:
         run: |
           echo "build_matrix=$(yq -oj -I0 '${{ inputs.build_matrix_path }}')" >> $GITEA_ENV
           yq -oj "${{ inputs.build_matrix_path }}"
+
   build:
     runs-on: ubuntu-latest
     container:
