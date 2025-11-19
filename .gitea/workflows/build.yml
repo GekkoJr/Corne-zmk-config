@@ -13,7 +13,9 @@ jobs:
 
     steps:
       - name: Checkout config repo
-        uses: actions/checkout@v4
+        run: |
+          git clone "$GITEA_SERVER_URL/$GITEA_REPOSITORY" .
+          git fetch --prune --unshallow || true
 
       - name: Initialize west (pointing to this repo as config)
         run: |
