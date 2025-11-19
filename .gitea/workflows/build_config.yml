@@ -48,7 +48,7 @@ jobs:
       matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
     steps:
       - name: install node
-      - run: |
+        run: |
           echo "installing node..."
           apt-get -y install --no-install-recommends nodejs
 
