@@ -8,24 +8,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: zmkfirmware/zmk-build-arm:stable
 
     steps:
       - name: Checkout config repo
-        run: |
-          git clone "$GITEA_SERVER_URL/$GITEA_REPOSITORY" .
-          git fetch --prune --unshallow || true
+        uses: actions/checkout@v4
 
-      - name: Initialize west (pointing to this repo as config)
+      - name: Build firmware using ZMK container
+        container:
+          image: zmkfirmware/zmk-build-arm:stable
         run: |
           west init -l .
           west update
           west zephyr-export
 
-      - name: Build firmware
-        run: |
           west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=my_keyboard
+
           cp build/zephyr/zmk.uf2 firmware.uf2
 
       - name: Upload artifact
