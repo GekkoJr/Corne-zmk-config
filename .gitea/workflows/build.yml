@@ -1,40 +1,6 @@
-name: Reusable user config build
-
-on:
-  push:
-    inputs:
-      build_matrix_path:
-        description: "Path to the build matrix file"
-        default: "build.yaml"
-        required: false
-        type: string
-      config_path:
-        description: "Path to the config directory"
-        default: "config"
-        required: false
-        type: string
-      fallback_binary:
-        description: "Fallback binary format, if no *.uf2 file was built"
-        default: "bin"
-        required: false
-        type: string
-      archive_name:
-        description: "Archive output file name"
-        default: "firmware"
-        required: false
-        type: string
+name: Build ZMK firmware
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  matrix:
-    runs-on: ubuntu-22.04
-    name: Fetch Build Keyboards
-    outputs:
-      build_matrix: ${{ env.build_matrix }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Fetch Build Matrix
-        run: |
-          echo "build_matrix=$(yq -oj -I0 '${{ inputs.build_matrix_path }}')" >> $GITEA_ENV
-          yq -oj "${{ inputs.build_matrix_path }}"
+  build:
+    uses: ./.gitea/workflows/build_user_config.yml
