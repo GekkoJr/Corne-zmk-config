@@ -39,8 +39,9 @@ jobs:
 
       - name: Fetch Build Matrix
         run: |
-          echo "build_matrix=$(yq -oj -I0 '${{ inputs.build_matrix_path }}')" >> $GITEA_ENV
-          yq -oj "${{ inputs.build_matrix_path }}"
+          build_matrix=$(yq eval -o=json "${{ inputs.build_matrix_path }}")
+          echo "build_matrix=$build_matrix" >> $GITEA_ENV
+          echo "::set-output name=build_matrix::$build_matrix"
   build:
     runs-on: ubuntu-latest
     container:
