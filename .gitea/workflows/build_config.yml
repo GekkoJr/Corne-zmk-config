@@ -39,7 +39,6 @@ jobs:
 
       - name: Fetch Build Matrix
         run: |
-          echo "input_build_matrix is:"
           echo ${{ inputs.build_matrix_path }}
           
           
