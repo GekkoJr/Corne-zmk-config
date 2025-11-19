@@ -178,7 +178,7 @@ jobs:
     name: Merge Output Artifacts
     steps:
       - name: Merge Artifacts
-        uses: actions/upload-artifact/merge@v4
+        uses: actions/upload-artifact/merge@v3
         with:
           name: ${{ inputs.archive_name }}
           pattern: artifact-*
