@@ -1,10 +1,7 @@
 name: Reusable user config build
 
 on:
-  push:
-    branches:
-      - master
-      - dev
+  workflow_call:
     inputs:
       build_matrix_path:
         description: "Path to the build matrix file"
@@ -35,6 +32,7 @@ jobs:
 
       - name: Fetch Build Matrix
         run: |
+          echo "matrix is:"
           echo ${{ inputs.build_matrix_path }}
           
           
