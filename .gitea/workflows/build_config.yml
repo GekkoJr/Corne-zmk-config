@@ -41,8 +41,7 @@ jobs:
         run: |
           echo "input_build_matrix is:"
           echo ${{ inputs.build_matrix_path }}
-          echo "build_matrix=$(yq -oj -I0 '${{ inputs.build_matrix_path }}')" >> $GITHUB_ENV
-          yq -oj "${{ inputs.build_matrix_path }}"
+          
           
   build:
     runs-on: ubuntu-latest
