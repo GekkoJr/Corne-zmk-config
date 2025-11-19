@@ -50,7 +50,10 @@ jobs:
       - name: install node
         run: |
           echo "installing node..."
-          apt-get -y install --no-install-recommends nodejs
+          apt-get update
+          apt-get -y install --no-install-recommends curl
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
 
       - name: Checkout
         uses: actions/checkout@v4
