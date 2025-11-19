@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: zmkfirmware/zmk-build:stable
+      image: zmkfirmware/zmk-build-arm:stable
 
     steps:
       - name: Checkout config repo
