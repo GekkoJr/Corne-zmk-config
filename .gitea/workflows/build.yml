@@ -1,66 +1,35 @@
-name: ZMK Firmware Build
+name: ZMK Build
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ main, master ]
   pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
 
     steps:
-
-      - name: Checkout zmk-config
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Install west & deps
+      - name: Checkout config repo
         run: |
-          sudo apt update
-          sudo apt install -y --no-install-recommends \
-            git cmake ninja-build gperf ccache dfu-util \
-            device-tree-compiler wget python3-pip python3-setuptools \
-            python3-wheel python3-venv
+          git clone https://git.gekkojr.me/gekko/zmk-config .
+          git fetch --prune --unshallow || true
 
-          # Create venv for west + zephyr python tooling
-          python3 -m venv ~/.zmk-venv
-          source ~/.zmk-venv/bin/activate
-
-          pip install west
-
-
-      - name: Install Zephyr SDK
+      - name: Initialize west (pointing to this repo as config)
         run: |
-          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.4/zephyr-sdk-0.17.4_linux-x86_64.tar.xz
-          tar xf zephyr-sdk-0.17.4_linux-x86_64.tar.xz
-          ./zephyr-sdk-0.17.4/setup.sh -h
-          ./zephyr-sdk-0.17.4/setup.sh
-
-      - name: Initialize West Workdir
-        run: |
-          source ~/.zmk-venv/bin/activate
           west init -l .
           west update
           west zephyr-export
 
-      - name: Build firmware(s)
+      - name: Build firmware
         run: |
-          source ~/.zmk-venv/bin/activate
-          mkdir -p build
-          cd build
-          # Example — update to your shield(s):
-          west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=mysplit_left
-          cp build/zephyr/zmk.uf2 ../mysplit_left.uf2
-          
-          west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=mysplit_right
-          cp build/zephyr/zmk.uf2 ../mysplit_right.uf2
+          west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=my_keyboard
+          cp build/zephyr/zmk.uf2 firmware.uf2
 
-      - name: Upload firmware artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: firmware
-          path: "*.uf2"
+          name: zmk-firmware
+          path: firmware.uf2
