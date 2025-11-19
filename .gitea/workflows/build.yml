@@ -35,11 +35,10 @@ jobs:
 
       - name: Install Zephyr SDK
         run: |
-          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.4/zephyr-sdk-0.16.4_linux-x86_64.tar.gz
-          tar xf zephyr-sdk-0.16.4_linux-x86_64.tar.gz
-          sudo mv zephyr-sdk-0.16.4 /opt/zephyr-sdk
-          /opt/zephyr-sdk/setup.sh -h
-          /opt/zephyr-sdk/setup.sh
+          wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.4/zephyr-sdk-0.17.4_linux-x86_64.tar.xz
+          tar xf zephyr-sdk-0.17.4_linux-x86_64.tar.xz
+          ./zephyr-sdk-0.17.4/setup.sh -h
+          ./zephyr-sdk-0.17.4/setup.sh
 
       - name: Initialize West Workdir
         run: |
