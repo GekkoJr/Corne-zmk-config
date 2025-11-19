@@ -23,8 +23,14 @@ jobs:
           sudo apt update
           sudo apt install -y --no-install-recommends \
             git cmake ninja-build gperf ccache dfu-util \
-            device-tree-compiler wget python3-pip python3-setuptools python3-wheel
-          pip3 install west
+            device-tree-compiler wget python3-pip python3-setuptools \
+            python3-wheel python3-venv
+
+          # Create venv for west + zephyr python tooling
+          python3 -m venv ~/.zmk-venv
+          source ~/.zmk-venv/bin/activate
+
+          pip install west
 
       - name: Install Zephyr SDK
         run: |
