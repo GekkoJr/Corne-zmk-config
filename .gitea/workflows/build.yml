@@ -3,4 +3,4 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: ./.gitea/workflows/build_user_config.yml
+    uses: ./.gitea/workflows/build_config.yml
