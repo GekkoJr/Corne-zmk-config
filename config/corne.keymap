@@ -9,7 +9,7 @@
 #include <dt-bindings/zmk/bt.h>
 
 #include <locale/keys_nb.h>
-#include <locale/keys_en.h>
+#include <locale/keys_en_gb.h>
 
 / {
         keymap {
